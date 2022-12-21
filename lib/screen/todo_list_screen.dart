@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:to_do/db/database.dart';
+import 'package:to_do/function/task_repository.dart';
+import 'package:to_do/screen/todo_form_screen.dart';
 
+import '../component/appbar/general_appbar.dart';
 import '../utils/app_constant.dart';
 import '../utils/app_string.dart';
 
@@ -14,17 +18,17 @@ class ToDoListScreen extends StatefulWidget {
 
 class _ToDoListScreenState extends State<ToDoListScreen> {
 
+  TaskRepository taskRepository = TaskRepository();
+
   /// PagingController<index, ReturnObject> for controlling the list
-  final PagingController<int, String> _pagingController = PagingController(firstPageKey: 0);
-  /// Default page size for each query
-  static const _pageSize = 20;
+  final PagingController<int, TaskData> _pagingController = PagingController(firstPageKey: 0);
 
   /// Add listeners on screen creation
   @override
   void initState() {
-    // _pagingController.addPageRequestListener((pageKey) {
-    //   _fetchPage(pageKey);
-    // });
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
 
     super.initState();
   }
@@ -32,26 +36,25 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   /// Dispose controllers
   @override
   void dispose() {
-
     _pagingController.dispose();
     super.dispose();
   }
 
   /// Fetch To-Do List
-  // Future<void> _fetchPage(int pageKey) async {
-  //   try {
-  //     final newItems = await inspectionRepository.getData(context, _pageSize, pageKey, _listPreferences, widget.campaignId);
-  //     final isLastPage = newItems.length < _pageSize;
-  //     if (isLastPage) {
-  //       _pagingController.appendLastPage(newItems);
-  //     } else {
-  //       final nextPageKey = pageKey + newItems.length;
-  //       _pagingController.appendPage(newItems, nextPageKey);
-  //     }
-  //   } catch (error) {
-  //     _pagingController.error = error;
-  //   }
-  // }
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      final newItems = await taskRepository.getList(context, pageSize, pageKey);
+      final isLastPage = newItems.length < pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
 
   /// To-Do Task Widget
   // Widget infoCard(InspectionList item, int index) {
@@ -163,22 +166,16 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   // }
 
   /// To-Do List Widget
-  Widget listView() {
-    return PagedListView<int, String>.separated(
+  Widget _listView() {
+    return PagedListView<int, TaskData>.separated(
       pagingController: _pagingController,
-      // padding: EdgeInsets.symmetric(vertical: AppBar().preferredSize.height +
-      //     MediaQuery.of(context).padding.top + 24),
-      builderDelegate: PagedChildBuilderDelegate<String>(
+      builderDelegate: PagedChildBuilderDelegate<TaskData>(
         animateTransitions: true,
         itemBuilder: (context, item, index) {
-          return Text(item);
+          // return Text(item.task_title);
+          return Text((index + 1).toString());
           // return infoCard(item, index + 1);
         },
-        // firstPageErrorIndicatorBuilder: (context) => ErrorIndicator(
-        //   error: _pagingController.error,
-        //   onTryAgain: () => _pagingController.refresh(),
-        // ),
-        // noItemsFoundIndicatorBuilder: (context) => EmptyListIndicator(),
       ),
       separatorBuilder: (context, index) => SizedBox(height: padding),
     );
@@ -188,23 +185,22 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(toDoListScreenTitle),
-      ), // Theme AppBar
+      appBar: appButton(toDoListScreenTitle),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Expanded(
             child: RefreshIndicator(
               onRefresh: () => Future.sync(() => _pagingController.refresh()), // Refresh method
-              child: listView()
+              child: _listView()
             ),
           ),
         ],
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: () => debugPrint("BRUH"),
+        onPressed: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ToDoFormScreen())),
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // Create Task Button

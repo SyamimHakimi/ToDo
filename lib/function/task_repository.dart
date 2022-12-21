@@ -6,14 +6,16 @@ import '../db/database_provider.dart';
 
 class TaskRepository implements Exception {
 
-  /// Throws [Exception].
-  Future<List<TaskData>> getData(BuildContext buildContext, int limit, int offset) async {
+  /// Get the To-Do List through pagination
+  Future<List<TaskData>> getList(BuildContext buildContext, int limit, int offset) async {
     DatabaseProvider db = Provider.of<DatabaseProvider>(buildContext, listen: false);
 
     try {
+      print("HERE");
       return await db.db.taskDao.getListPagination(limit, offset);
     } catch(e){
-      throw Exception("Failed to get Campaign List");
+      print(e.toString());
+      throw Exception("Failed to get To-Do List");
     }
   }
 }
