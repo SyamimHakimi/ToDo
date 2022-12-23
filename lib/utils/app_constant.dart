@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:animations/animations.dart';
 import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +16,14 @@ double padding = 8;
 double padding16 = 16;
 double padding20 = 20;
 
+double radiusCard = 8;
+
+List<BoxShadow> shadowCard = <BoxShadow>[
+  BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 10.0),
+];
+
 DateFormat dateFormat = DateFormat.yMd('en_GB');
+DateFormat dateFormatWord = DateFormat.yMMMd('en_GB');
 
 /// Form UI
 InputDecoration formDecoration(String hint) {
@@ -55,6 +65,29 @@ void showToastSuccess(BuildContext context, String text) {
     content: Text(text, overflow: TextOverflow.visible, textAlign: TextAlign.center),
   );
 }
+
+/// Dialog
+Future showAppDialog(BuildContext context, Widget targetDialog, {bool barrierDismissible = false}) {
+  return showGeneralDialog(
+      context: context,
+      pageBuilder: (context, primaryAnimation, secondaryAnimation) => targetDialog,
+      transitionBuilder: (context, primaryAnimation, secondaryAnimation, child) =>
+          FadeScaleTransition(animation: primaryAnimation, child: child),
+      barrierDismissible: barrierDismissible,
+  );
+}
+
+Widget quitDialog(BuildContext context) {
+  return AlertDialog(
+      title: const Text(dialogQuitTitle),
+      content: const Text(dialogQuitSubTitle),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text(generalCancel)),
+        TextButton(onPressed: () => exit(0), child: const Text(generalConfirm, style: TextStyle(color: Colors.red))),
+      ]
+  );
+}
+
 
 /// Colors
 Color primaryColor = const Color(0xFFFCBE44);

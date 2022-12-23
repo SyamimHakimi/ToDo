@@ -1,3 +1,4 @@
+import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'package:form_builder_validators/localization/l10n.dart';
@@ -28,13 +29,13 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           builder: (context, _) {
             var child = _!;
-            // final navigatorKey = child.key as GlobalKey<NavigatorState>;
-            // child = Toast(navigatorKey: navigatorKey, child: child);
-            // child = FlashTheme(
-            //   flashBarTheme: const FlashBarThemeData.dark(),
-            //   flashDialogTheme: const FlashDialogThemeData(),
-            //   child: child,
-            // );
+            final navigatorKey = child.key as GlobalKey<NavigatorState>;
+            child = Toast(navigatorKey: navigatorKey, child: child);
+            child = FlashTheme(
+              flashBarTheme: const FlashBarThemeData.dark(),
+              flashDialogTheme: const FlashDialogThemeData(),
+              child: child,
+            );
             return child;
           },
           title: appTitle,
@@ -54,10 +55,8 @@ class MyApp extends StatelessWidget {
           localizationsDelegates: const [
             FormBuilderLocalizations.delegate,
           ],
-
-          // navigatorObservers: <NavigatorObserver>[routeObserver],
-          // home: const ToDoListScreen(),
-          home: const ToDoFormScreen(),
+          home: const ToDoListScreen(),
+          // home: const ToDoFormScreen(),
         )
     );
   }

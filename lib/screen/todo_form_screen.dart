@@ -60,6 +60,7 @@ class _ToDoFormScreenState extends State<ToDoFormScreen> {
   //     lastUploadedDateHolder = toDoData.last_uploaded_date != null ? AppConstant.dateDatabaseToMobile(toDoData.last_uploaded_date !) : null;
   //   }
   // }
+
   /// Validate To-Do List
   /// Wrapper Function
   Future<bool> validateSave() async {
@@ -112,7 +113,7 @@ class _ToDoFormScreenState extends State<ToDoFormScreen> {
               ), // Start Date
               SizedBox(height: padding20),
               FormDate(
-                formTitle: toDoFormEndDate,
+                formTitle: toDoFormEstimatedEndDate,
                 dateTime: _dateTimeEnd,
                 validatorsList: [FormBuilderValidators.required(),
                       (value) =>
