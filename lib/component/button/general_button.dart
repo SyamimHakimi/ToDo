@@ -8,7 +8,7 @@ TextButton textButton(String buttonText, void Function()? onPressed) {
         backgroundColor: Colors.black,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: const RoundedRectangleBorder(),
-        padding: EdgeInsets.symmetric(vertical: padding20)
+        padding: EdgeInsets.symmetric(vertical: padding16)
       ),
       onPressed: onPressed,
       child: Text(buttonText, style: const TextStyle(color: Colors.white))

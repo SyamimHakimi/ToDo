@@ -6,20 +6,24 @@ part of 'database.dart';
 class TaskData extends DataClass implements Insertable<TaskData> {
   final int id;
   final String task_title;
-  final DateTime start_date;
-  final DateTime end_date;
+  final DateTime? start_date;
+  final DateTime? end_date;
   const TaskData(
       {required this.id,
       required this.task_title,
-      required this.start_date,
-      required this.end_date});
+      this.start_date,
+      this.end_date});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['task_title'] = Variable<String>(task_title);
-    map['start_date'] = Variable<DateTime>(start_date);
-    map['end_date'] = Variable<DateTime>(end_date);
+    if (!nullToAbsent || start_date != null) {
+      map['start_date'] = Variable<DateTime>(start_date);
+    }
+    if (!nullToAbsent || end_date != null) {
+      map['end_date'] = Variable<DateTime>(end_date);
+    }
     return map;
   }
 
@@ -27,8 +31,12 @@ class TaskData extends DataClass implements Insertable<TaskData> {
     return TaskCompanion(
       id: Value(id),
       task_title: Value(task_title),
-      start_date: Value(start_date),
-      end_date: Value(end_date),
+      start_date: start_date == null && nullToAbsent
+          ? const Value.absent()
+          : Value(start_date),
+      end_date: end_date == null && nullToAbsent
+          ? const Value.absent()
+          : Value(end_date),
     );
   }
 
@@ -38,8 +46,8 @@ class TaskData extends DataClass implements Insertable<TaskData> {
     return TaskData(
       id: serializer.fromJson<int>(json['id']),
       task_title: serializer.fromJson<String>(json['task_title']),
-      start_date: serializer.fromJson<DateTime>(json['start_date']),
-      end_date: serializer.fromJson<DateTime>(json['end_date']),
+      start_date: serializer.fromJson<DateTime?>(json['start_date']),
+      end_date: serializer.fromJson<DateTime?>(json['end_date']),
     );
   }
   @override
@@ -48,21 +56,21 @@ class TaskData extends DataClass implements Insertable<TaskData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'task_title': serializer.toJson<String>(task_title),
-      'start_date': serializer.toJson<DateTime>(start_date),
-      'end_date': serializer.toJson<DateTime>(end_date),
+      'start_date': serializer.toJson<DateTime?>(start_date),
+      'end_date': serializer.toJson<DateTime?>(end_date),
     };
   }
 
   TaskData copyWith(
           {int? id,
           String? task_title,
-          DateTime? start_date,
-          DateTime? end_date}) =>
+          Value<DateTime?> start_date = const Value.absent(),
+          Value<DateTime?> end_date = const Value.absent()}) =>
       TaskData(
         id: id ?? this.id,
         task_title: task_title ?? this.task_title,
-        start_date: start_date ?? this.start_date,
-        end_date: end_date ?? this.end_date,
+        start_date: start_date.present ? start_date.value : this.start_date,
+        end_date: end_date.present ? end_date.value : this.end_date,
       );
   @override
   String toString() {
@@ -90,8 +98,8 @@ class TaskData extends DataClass implements Insertable<TaskData> {
 class TaskCompanion extends UpdateCompanion<TaskData> {
   final Value<int> id;
   final Value<String> task_title;
-  final Value<DateTime> start_date;
-  final Value<DateTime> end_date;
+  final Value<DateTime?> start_date;
+  final Value<DateTime?> end_date;
   const TaskCompanion({
     this.id = const Value.absent(),
     this.task_title = const Value.absent(),
@@ -101,11 +109,9 @@ class TaskCompanion extends UpdateCompanion<TaskData> {
   TaskCompanion.insert({
     this.id = const Value.absent(),
     required String task_title,
-    required DateTime start_date,
-    required DateTime end_date,
-  })  : task_title = Value(task_title),
-        start_date = Value(start_date),
-        end_date = Value(end_date);
+    this.start_date = const Value.absent(),
+    this.end_date = const Value.absent(),
+  }) : task_title = Value(task_title);
   static Insertable<TaskData> custom({
     Expression<int>? id,
     Expression<String>? task_title,
@@ -123,8 +129,8 @@ class TaskCompanion extends UpdateCompanion<TaskData> {
   TaskCompanion copyWith(
       {Value<int>? id,
       Value<String>? task_title,
-      Value<DateTime>? start_date,
-      Value<DateTime>? end_date}) {
+      Value<DateTime?>? start_date,
+      Value<DateTime?>? end_date}) {
     return TaskCompanion(
       id: id ?? this.id,
       task_title: task_title ?? this.task_title,
@@ -190,14 +196,14 @@ class $TaskTable extends Task with TableInfo<$TaskTable, TaskData> {
       const VerificationMeta('start_date');
   @override
   late final GeneratedColumn<DateTime> start_date = GeneratedColumn<DateTime>(
-      'start_date', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+      'start_date', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   static const VerificationMeta _end_dateMeta =
       const VerificationMeta('end_date');
   @override
   late final GeneratedColumn<DateTime> end_date = GeneratedColumn<DateTime>(
-      'end_date', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+      'end_date', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [id, task_title, start_date, end_date];
   @override
@@ -225,14 +231,10 @@ class $TaskTable extends Task with TableInfo<$TaskTable, TaskData> {
           _start_dateMeta,
           start_date.isAcceptableOrUnknown(
               data['start_date']!, _start_dateMeta));
-    } else if (isInserting) {
-      context.missing(_start_dateMeta);
     }
     if (data.containsKey('end_date')) {
       context.handle(_end_dateMeta,
           end_date.isAcceptableOrUnknown(data['end_date']!, _end_dateMeta));
-    } else if (isInserting) {
-      context.missing(_end_dateMeta);
     }
     return context;
   }
@@ -248,9 +250,9 @@ class $TaskTable extends Task with TableInfo<$TaskTable, TaskData> {
       task_title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}task_title'])!,
       start_date: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}start_date'])!,
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}start_date']),
       end_date: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}end_date'])!,
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}end_date']),
     );
   }
 

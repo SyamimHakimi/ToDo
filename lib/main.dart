@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
+import 'package:form_builder_validators/localization/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do/db/database_provider.dart';
 import 'package:to_do/screen/todo_form_screen.dart';
@@ -7,8 +8,11 @@ import 'package:to_do/screen/todo_list_screen.dart';
 import 'package:to_do/utils/app_constant.dart';
 import 'package:to_do/utils/app_string.dart';
 import 'package:to_do/utils/app_theme.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
+  initializeDateFormatting('en_GB');
+
   runApp(const MyApp());
 }
 
@@ -47,9 +51,9 @@ class MyApp extends StatelessWidget {
             ),
           ),
           supportedLocales: const [Locale('en')],
-          // localizationsDelegates: const [
-          //   FormBuilderLocalizations.delegate,
-          // ],
+          localizationsDelegates: const [
+            FormBuilderLocalizations.delegate,
+          ],
 
           // navigatorObservers: <NavigatorObserver>[routeObserver],
           // home: const ToDoListScreen(),

@@ -18,4 +18,15 @@ class TaskRepository implements Exception {
       throw Exception("Failed to get To-Do List");
     }
   }
+
+  /// Save To-Do List Data
+  Future<void> saveToDo(BuildContext buildContext, int? taskId, TaskCompanion item) async {
+    DatabaseProvider db = Provider.of<DatabaseProvider>(buildContext, listen: false);
+
+    try {
+      await db.db.taskDao.saveTaskData(taskId, item);
+    } catch (error) {
+      rethrow;
+    }
+  }
 }
