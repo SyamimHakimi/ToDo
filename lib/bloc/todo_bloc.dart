@@ -25,5 +25,21 @@ class ToDoBloc extends Bloc<ToDoEvent, ToDoState> {
         emit(ToDoError(e.toString()));
       }
     });
+
+    on<ToDoToggleEvent>((event, emit) async {
+
+      try {
+        emit(ToDoLoading());
+        String successMessage;
+        if (event.value) {
+          successMessage = toDoTaskCompleted;
+        } else { successMessage = toDoTaskIncomplete; }
+        await taskRepository.toggleCompleted(event.buildContext, event.taskId, event.value);
+        emit(ToDoLoaded(successMessage));
+        emit(ToDoToggled(event.value));
+      } on Exception catch (e) {
+        emit(ToDoError(e.toString()));
+      }
+    });
   }
 }

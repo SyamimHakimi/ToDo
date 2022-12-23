@@ -44,6 +44,17 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
       rethrow;
     }
   }
+
+  /// Toggle Completed
+  Future<void> toggleCompleted(int taskId, bool completed) async {
+    try {
+      await (update(task)..where((tbl) => tbl.id.equals(taskId))).write(TaskCompanion(
+        completed: Value(completed),
+      ));
+    } catch (error) {
+      rethrow;
+    }
+  }
 }
 
 

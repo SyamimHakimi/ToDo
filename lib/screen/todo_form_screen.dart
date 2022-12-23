@@ -15,7 +15,9 @@ import '../utils/app_string.dart';
 
 /// List all To-Do toDos
 class ToDoFormScreen extends StatefulWidget {
-  const ToDoFormScreen({Key? key}) : super(key: key);
+  const ToDoFormScreen({Key? key, required this.taskData}) : super(key: key);
+
+  final TaskData? taskData;
 
   @override
   State<ToDoFormScreen> createState() => _ToDoFormScreenState();
@@ -40,8 +42,13 @@ class _ToDoFormScreenState extends State<ToDoFormScreen> {
     super.dispose();
   }
 
-  // /// Get Data from Object
-  // Future<void> fromObject(toDoScreenModel toDoScreenModel) async {
+  /// Get Data from Object
+  Future<void> fromObject() async {
+    if (widget.taskData != null) {
+      _controllerTitle.text = widget.taskData!.task_title;
+      _dateTimeStart = widget.taskData?.start_date;
+      _dateTimeEnd = widget.taskData?.end_date;
+    }
   //   DprData? toDoData = toDoScreenModel.toDoData;
   //
   //   _toDoData = toDoData;
@@ -59,7 +66,7 @@ class _ToDoFormScreenState extends State<ToDoFormScreen> {
   //     reportDateHolder = toDoData.report_date != null ? AppConstant.dateDatabaseToMobile(toDoData.report_date !) : null;
   //     lastUploadedDateHolder = toDoData.last_uploaded_date != null ? AppConstant.dateDatabaseToMobile(toDoData.last_uploaded_date !) : null;
   //   }
-  // }
+  }
 
   /// Validate To-Do List
   /// Wrapper Function
@@ -141,12 +148,17 @@ class _ToDoFormScreenState extends State<ToDoFormScreen> {
             listener: (context, state) {
               if (state is ToDoLoaded) {
                 showToastSuccess(context, state.message);
+                Navigator.pop(context, true);
               } else if (state is ToDoError) {
                 showToastError(context, state.message);
               }
             },
             builder: (blocContext, state) {
               _blocMainContext = blocContext;
+
+              if (state is ToDoInitial) {
+                fromObject();
+              }
 
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -14,6 +14,14 @@ class ToDoLoading extends ToDoState {
   List<Object> get props => [];
 }
 
+class ToDoToggled extends ToDoState {
+  final bool value;
+
+  const ToDoToggled(this.value);
+  @override
+  List<Object> get props => [value];
+}
+
 class ToDoLoaded extends ToDoState {
   final String message;
 

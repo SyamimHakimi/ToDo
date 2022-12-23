@@ -11,10 +11,8 @@ class TaskRepository implements Exception {
     DatabaseProvider db = Provider.of<DatabaseProvider>(buildContext, listen: false);
 
     try {
-      print("HERE");
       return await db.db.taskDao.getListPagination(limit, offset);
     } catch(e){
-      print(e.toString());
       throw Exception("Failed to get To-Do List");
     }
   }
@@ -25,6 +23,17 @@ class TaskRepository implements Exception {
 
     try {
       await db.db.taskDao.saveTaskData(taskId, item);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  /// Toggle Status To-Do List Data
+  Future<void> toggleCompleted(BuildContext buildContext, int taskId, bool value) async {
+    DatabaseProvider db = Provider.of<DatabaseProvider>(buildContext, listen: false);
+
+    try {
+      await db.db.taskDao.toggleCompleted(taskId, value);
     } catch (error) {
       rethrow;
     }

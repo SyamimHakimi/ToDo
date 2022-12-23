@@ -30,9 +30,6 @@ InputDecoration formDecoration(String hint) {
 
   return InputDecoration(
     hintText: hint,
-    // hintStyle: AppTheme.bodyFontSecondaryDisabled,
-    // errorStyle: isInline ? const TextStyle(fontSize: 0, height: 0, color: Colors.transparent) : AppTheme.captionError,
-    // counterStyle: isInline ? const TextStyle(fontSize: 0, height: 0, color: Colors.transparent) : null,
     border: outlineBorderInputFieldBasicFilter,
   );
 }
@@ -91,3 +88,5 @@ Widget quitDialog(BuildContext context) {
 
 /// Colors
 Color primaryColor = const Color(0xFFFCBE44);
+Color secondaryColor = const Color(0xFFE7E3D1);
+Color tertiaryColor = const Color(0xFFE95D2E);

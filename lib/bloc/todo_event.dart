@@ -19,3 +19,19 @@ class ToDoSaveEvent extends ToDoEvent {
   List<Object> get props => [buildContext, taskCompanion];
 
 }
+
+class ToDoToggleEvent extends ToDoEvent {
+  final BuildContext buildContext;
+  final int taskId;
+  final bool value;
+
+  const ToDoToggleEvent({
+    required this.buildContext,
+    required this.taskId,
+    required this.value,
+  });
+
+  @override
+  List<Object> get props => [buildContext, taskId, value];
+
+}

@@ -8,4 +8,5 @@ class Task extends Table {
   TextColumn get task_title => text().withLength(min: 0, max: 200)();
   DateTimeColumn get start_date => dateTime().nullable()();
   DateTimeColumn get end_date => dateTime().nullable()();
+  BoolColumn get completed => boolean().withDefault(const Constant(false)).nullable()();
 }
