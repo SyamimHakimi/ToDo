@@ -1,6 +1,8 @@
 # To-Do Etiqa Assessment
 Assessment To-Do Application.
 
+This project was compiled using the latest stable version of Flutter as of 20/12/2022 (v.3.3.10)
+
 Added additional functionality in the application:
 1) Form Validation for To-Do List
 2) Delete Function for To-Do List
