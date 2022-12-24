@@ -55,6 +55,19 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
       rethrow;
     }
   }
+
+  /// Delete Item
+  Future<void> deleteTaskData(int taskId) async {
+    try {
+      TaskData? taskData = await getObjectById(taskId);
+
+      if (taskData != null) {
+        await deleteObject(taskData);
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
 }
 
 

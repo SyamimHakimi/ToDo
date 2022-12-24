@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:to_do/screen/todo_list_screen.dart';
 
 import '../../bloc/todo_bloc.dart';
@@ -55,6 +56,19 @@ class _ToDoListState extends State<ToDoList> {
     }
   }
 
+  /// Toggle completed status
+  void deleteTaskReconfirm(int taskId) {
+    showAppDialog(context, alertDialog(context, dialogDeleteTaskTitle,
+        dialogDeleteTaskSubTitle, () => deleteTask(taskId)));
+  }
+
+  void deleteTask(int taskId) {
+    if (_blocMainContext != null) {
+      final toDoBloc = BlocProvider.of<ToDoBloc>(_blocMainContext!);
+      toDoBloc.add(ToDoDeleteEvent(buildContext: _blocMainContext!, taskId: taskId));
+    }
+  }
+
   /// Main Body
   Widget _mainBody(TaskData item) {
     String dateTimesStartString = item.start_date != null ? dateFormatWord.format(item.start_date!) : "-";
@@ -82,7 +96,8 @@ class _ToDoListState extends State<ToDoList> {
             children: [
               _itemValue(dateTimesStartString),
               _itemValue(dateTimesEndString),
-              Expanded(child: DateCountdown(dateEnd: item.end_date,
+              Expanded(child: DateCountdown(completed: currentState,
+                  dateStart: item.start_date, dateEnd: item.end_date,
                   textStyle: Theme.of(context).textTheme.titleSmall!)),
             ],
           )
@@ -109,7 +124,7 @@ class _ToDoListState extends State<ToDoList> {
             SizedBox(width: padding),
             Text(completed, style: Theme.of(context).textTheme.titleMedium),
             Expanded(child: FormCheckBox(formTitle: toDoListTick,
-              initialValue: item.completed,
+              initialValue: currentState,
               onBoolChange: (value) {
                 if (value != null) toggleCompleted(item.id, value);
               },
@@ -128,40 +143,66 @@ class _ToDoListState extends State<ToDoList> {
     return Expanded(child: Text(title, style: textStyle));
   }
 
+  /// Slidable Action Button
+  ActionPane _actionPane() {
+    return ActionPane(
+      motion: const ScrollMotion(),
+      children: [
+        SlidableAction(
+          onPressed: (context) => deleteTaskReconfirm(widget.item.id),
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.red,
+          icon: Icons.delete_rounded,
+          label: generalDelete,
+          spacing: padding,
+        ),
+      ],
+    );
+  }
+
   /// To-Do Task Widget
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => goToDoForm(widget.item),
 
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(radiusCard)),
-            boxShadow: shadowCard
-        ),
-        child: BlocProvider(
-          create: (context) => ToDoBloc(),
-          child: BlocConsumer<ToDoBloc, ToDoState>(
-            listener: (context, state) {
-              if (state is ToDoLoaded) {
-                showToastSuccess(context, state.message);
-              } else if (state is ToDoError) {
-                showToastError(context, state.message);
-              } else if (state is ToDoToggled) {
-                currentState = state.value;
-              }
-            },
-            builder: (blocContext, state) {
-              _blocMainContext = blocContext;
+      child: BlocProvider(
+        create: (context) => ToDoBloc(),
+        child: BlocConsumer<ToDoBloc, ToDoState>(
+          listener: (context, state) {
+            if (state is ToDoLoaded) {
+              showToastSuccess(context, state.message);
+            } else if (state is ToDoError) {
+              showToastError(context, state.message);
+            } else if (state is ToDoToggled) {
+              currentState = state.value;
+            } else if (state is ToDoDeleted) {
+              Navigator.pop(context);
+              widget.refreshAction();
+            }
+          },
+          builder: (blocContext, state) {
+            _blocMainContext = blocContext;
 
-              return Column(
-                children: [
-                  _mainBody(widget.item),
-                  _trailingBody(widget.item)
-                ],
-              );
-            },
-          ),
+            return Slidable(
+              key: UniqueKey(),
+              startActionPane: _actionPane(),
+              endActionPane: _actionPane(),
+
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(radiusCard)),
+                    boxShadow: shadowCard
+                ),
+                child: Column(
+                  children: [
+                    _mainBody(widget.item),
+                    _trailingBody(widget.item)
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

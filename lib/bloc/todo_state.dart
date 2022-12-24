@@ -22,6 +22,11 @@ class ToDoToggled extends ToDoState {
   List<Object> get props => [value];
 }
 
+class ToDoDeleted extends ToDoState {
+  @override
+  List<Object> get props => [];
+}
+
 class ToDoLoaded extends ToDoState {
   final String message;
 

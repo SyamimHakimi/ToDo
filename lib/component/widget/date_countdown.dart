@@ -5,11 +5,15 @@ import 'package:flutter/material.dart';
 
 class DateCountdown extends StatefulWidget {
   const DateCountdown({
+    required this.completed,
+    required this.dateStart,
     required this.dateEnd,
     required this.textStyle,
     Key? key,
   })  : super(key: key);
 
+  final bool? completed;
+  final DateTime? dateStart;
   final DateTime? dateEnd;
   final TextStyle textStyle;
 
@@ -19,7 +23,7 @@ class DateCountdown extends StatefulWidget {
 
 class _DateCountdownState extends State<DateCountdown> {
   late Timer _timer;
-  Duration? _duration;
+  String? _countdown;
 
   @override
   void initState() {
@@ -39,20 +43,30 @@ class _DateCountdownState extends State<DateCountdown> {
   }
 
   void runCountdown() {
-    _duration = widget.dateEnd?.difference(DateTime.now());
-    if (_duration != null && _duration!.isNegative) {
-      _timer.cancel();
+    /// Skip if task completed
+    if (widget.completed != null && widget.completed!) {
+      _countdown = "-";
+
+    /// Do not count if task not started
+    } else if (widget.dateStart != null && widget.dateStart!.isBefore(DateTime.now())) {
+
+      Duration? duration = widget.dateEnd?.difference(DateTime.now());
+      if (duration != null && !duration.isNegative) {
+        _countdown = prettyDuration(duration, upperTersity: DurationTersity.day,
+            abbreviated: true, delimiter: " ", spacer: "");
+      } else {
+        _countdown = "Expired";
+      }
+
+    /// Incomplete and not started task
+    } else {
+      _countdown = "Task Not Started";
     }
   }
 
 
   @override
   Widget build(BuildContext context) {
-    String countdown = "-";
-    if (_duration != null && !_duration!.isNegative) {
-      countdown = prettyDuration(_duration!, upperTersity: DurationTersity.day,
-        abbreviated: true, delimiter: " ", spacer: "");
-    }
-    return Text(countdown, style: widget.textStyle);
+    return Text("$_countdown", style: widget.textStyle);
   }
 }

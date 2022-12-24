@@ -74,13 +74,13 @@ Future showAppDialog(BuildContext context, Widget targetDialog, {bool barrierDis
   );
 }
 
-Widget quitDialog(BuildContext context) {
+Widget alertDialog(BuildContext context, String title, String content, VoidCallback confirmCallback) {
   return AlertDialog(
-      title: const Text(dialogQuitTitle),
-      content: const Text(dialogQuitSubTitle),
+      title: Text(title),
+      content: Text(content),
       actions: [
         TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text(generalCancel)),
-        TextButton(onPressed: () => exit(0), child: const Text(generalConfirm, style: TextStyle(color: Colors.red))),
+        TextButton(onPressed: confirmCallback, child: const Text(generalConfirm, style: TextStyle(color: Colors.red))),
       ]
   );
 }

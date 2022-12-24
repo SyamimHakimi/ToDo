@@ -35,3 +35,17 @@ class ToDoToggleEvent extends ToDoEvent {
   List<Object> get props => [buildContext, taskId, value];
 
 }
+
+class ToDoDeleteEvent extends ToDoEvent {
+  final BuildContext buildContext;
+  final int taskId;
+
+  const ToDoDeleteEvent({
+    required this.buildContext,
+    required this.taskId,
+  });
+
+  @override
+  List<Object> get props => [buildContext, taskId];
+
+}

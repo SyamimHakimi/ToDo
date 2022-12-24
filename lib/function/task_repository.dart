@@ -38,4 +38,15 @@ class TaskRepository implements Exception {
       rethrow;
     }
   }
+
+  /// Save To-Do List Data
+  Future<void> deleteToDo(BuildContext buildContext, int taskId) async {
+    DatabaseProvider db = Provider.of<DatabaseProvider>(buildContext, listen: false);
+
+    try {
+      await db.db.taskDao.deleteTaskData(taskId);
+    } catch (error) {
+      rethrow;
+    }
+  }
 }

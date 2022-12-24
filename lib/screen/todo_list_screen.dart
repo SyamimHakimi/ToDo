@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -52,7 +54,8 @@ class ToDoListScreenState extends State<ToDoListScreen> {
 
   /// On Quit
   Future<bool> onQuit() async {
-    return await showAppDialog(context, quitDialog(context));
+    return await showAppDialog(context,
+        alertDialog(context, dialogQuitTitle, dialogQuitSubTitle, () => exit(0)));
   }
 
   /// Fetch To-Do List
